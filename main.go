@@ -51,7 +51,7 @@ func stopMove(gpg *g.Driver) {
 	gpg.SetMotorDps(g.MOTOR_RIGHT, 0)
 }
 
-func robotRunLoop(frontLidar *i2c.LIDARLiteDriver, gpg *g.Driver) {
+func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
 	gpg.SetLED(3, 0, 0, 255) // light on - blue (led 4 might be under chip, don't know where led 1 and 2 is or if it exists)
 	count := 0
@@ -59,8 +59,8 @@ func robotRunLoop(frontLidar *i2c.LIDARLiteDriver, gpg *g.Driver) {
 	for { // for(ever) loop to keep robot running
 
 		// values of sensors
-		err := frontLidar.Start()
-		frontLidarVal, err := frontLidar.Distance()
+		err := lidarSensor.Start()
+		lidarVal, err := lidarSensor.Distance()
 		if err != nil {
 			fmt.Errorf("lidar sensor reading error %+v", err)
 		}
@@ -69,16 +69,16 @@ func robotRunLoop(frontLidar *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		// print values into console
 		fmt.Println("______________________________") // 30 characters
 		fmt.Printf("|___________%-5d____________|\n", count)
-		fmt.Printf("|%-20s:   %-4d|\n", "front lidar sensor", frontLidarVal)
+		fmt.Printf("|%-20s:   %-4d|\n", "front lidar sensor", lidarVal)
 
 		time.Sleep(time.Second)
 
-		//moveForward(gpg)
+		moveForward(gpg)
 
 		// if we are close to the object, we will stop for now
-		if frontLidarVal <= 65 { //the higher the number, the further it stops
+		if lidarVal <= 65 { //the higher the number, the further it stops
 			gpg.SetLED(3, 255, 128, 0) // orange
-		} else if frontLidarVal > 65 && frontLidarVal <= 90 {
+		} else if lidarVal > 65 && lidarVal <= 90 {
 			gpg.SetLED(3, 0, 255, 0) // orange
 		} else {
 			gpg.SetLED(3, 255, 0, 0) // orange
