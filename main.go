@@ -56,6 +56,23 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 	gpg.SetLED(3, 0, 0, 255) // light on - blue (led 4 might be under chip, don't know where led 1 and 2 is or if it exists)
 	count := 0
 
+	// --   START
+
+	//  - first, check lidar to see if it's facing the box or not
+
+	// -- LOOP 1 - CHECKING
+	//  - if not, move forward until we see 'something' (the box), and start recording distance
+
+	// -- LOOP 2 - MOVING and STOPPING
+	//  - if yes, move forward until we no longer see the box, move forward to compensate for body of robot + 25 cm distance worth
+	// - then turn 90 degrees clockwise
+	// after turn, continue moving forward, recording distance as soon as it sees the box (around 30-50ish from our calculations)
+	// check that the lidar values stay relatively the same, otherwise if they are rising or diminishing it might mean the robot is not perpendicular
+
+	// when done with second side, stop robot, do calculations to get area + perimeter
+
+	// --    END
+
 	for { // for(ever) loop to keep robot running
 
 		// values of sensors
@@ -73,13 +90,19 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
 		time.Sleep(time.Second)
 
-		//moveForward(gpg)
+		moveForward(gpg)
 
-		// if we are close to the object, we will stop for now
-		if lidarVal <= 65 { //the higher the number, the further it stops
-			gpg.SetLED(3, 255, 128, 0)
-		} else if lidarVal > 65 && lidarVal <= 90 {
-			gpg.SetLED(3, 0, 255, 0) // orange
+		if lidarVal > 10 && lidarVal <= 60 {
+			gpg.SetLED(3, 0, 255, 0) // green
+		} else {
+			gpg.SetLED(3, 255, 0, 0) // red
+		}
+
+		// color values based on lidar values
+		if lidarVal <= 10 { //the higher the number, the further it stops
+			gpg.SetLED(3, 255, 128, 0) // orange
+		} else if lidarVal > 10 && lidarVal <= 60 {
+			gpg.SetLED(3, 0, 255, 0) // green
 		} else {
 			gpg.SetLED(3, 255, 0, 0) // orange
 		}
