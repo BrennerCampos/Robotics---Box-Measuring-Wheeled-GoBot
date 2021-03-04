@@ -104,7 +104,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		} else if lidarVal > 10 && lidarVal <= 60 {
 			gpg.SetLED(3, 0, 255, 0) // green
 		} else {
-			gpg.SetLED(3, 255, 0, 0) // orange
+			gpg.SetLED(3, 255, 0, 0) // red
 		}
 
 	}
