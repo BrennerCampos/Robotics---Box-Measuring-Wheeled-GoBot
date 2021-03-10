@@ -111,7 +111,10 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		if lidarVal >= 60 {
 			time.Sleep(time.Second)
 			turnLeft(gpg)
-		} else {
+		} else if lidarVal < 25 {
+			turnRight(gpg)
+
+		} else if lidarVal >= 25 && lidarVal < 60 {
 			moveForward(gpg)
 		}
 
