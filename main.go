@@ -57,8 +57,8 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 	if err != nil {
 		fmt.Errorf("Unable to get battery voltage %+v", err)
 	}
+	fmt.Println("Battery volt: ")
 	fmt.Println(battery)
-	//fmt.Println("current battery voltage: " + battery) // does not return voltage
 
 	gpg.SetLED(3, 0, 0, 255) // light on - blue (led 4 might be under chip, don't know where led 1 and 2 is or if it exists)
 	count := 0
@@ -108,7 +108,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		fmt.Printf("|%-20s:   %-4d|\n", "left wheel", g.MOTOR_LEFT)
 		fmt.Printf("|%-20s:   %-4d|\n", "left wheel", g.GET_MOTOR_STATUS_LEFT)
 		fmt.Printf("|%-20s:   %-4d|\n", "left wheel", int(g.MOTOR_TICKS_PER_DEGREE))
-		fmt.Printf("|%-20s:   %-4d|\n", "left wheel", leftMotor)
+		fmt.Printf("|%-20s:   %-4d|\n", "left wheel", leftMotor%360)
 
 		time.Sleep(time.Second)
 
