@@ -32,13 +32,13 @@ func main() {
 }
 
 func turnLeft(gpg *g.Driver) {
-	gpg.SetMotorDps(g.MOTOR_LEFT, 65)
-	gpg.SetMotorDps(g.MOTOR_RIGHT, 0)
+	gpg.SetMotorDps(g.MOTOR_LEFT, 0)
+	gpg.SetMotorDps(g.MOTOR_RIGHT, 65)
 }
 
 func turnRight(gpg *g.Driver) {
-	gpg.SetMotorDps(g.MOTOR_LEFT, 0)
-	gpg.SetMotorDps(g.MOTOR_RIGHT, 80)
+	gpg.SetMotorDps(g.MOTOR_LEFT, 80)
+	gpg.SetMotorDps(g.MOTOR_RIGHT, 0)
 }
 
 func moveForward(gpg *g.Driver) {
