@@ -32,18 +32,18 @@ func main() {
 }
 
 func turnLeft(gpg *g.Driver) {
-	gpg.SetMotorDps(g.MOTOR_LEFT, 20)
-	gpg.SetMotorDps(g.MOTOR_RIGHT, 65)
+	gpg.SetMotorDps(g.MOTOR_LEFT, 35)
+	gpg.SetMotorDps(g.MOTOR_RIGHT, 70)
 }
 
 func turnRight(gpg *g.Driver) {
-	gpg.SetMotorDps(g.MOTOR_LEFT, 80)
-	gpg.SetMotorDps(g.MOTOR_RIGHT, 0)
+	gpg.SetMotorDps(g.MOTOR_LEFT, 70)
+	gpg.SetMotorDps(g.MOTOR_RIGHT, 35)
 }
 
 func moveForward(gpg *g.Driver) {
-	gpg.SetMotorDps(g.MOTOR_LEFT, 50)
-	gpg.SetMotorDps(g.MOTOR_RIGHT, 50)
+	gpg.SetMotorDps(g.MOTOR_LEFT, 70)
+	gpg.SetMotorDps(g.MOTOR_RIGHT, 70)
 }
 
 func stopMove(gpg *g.Driver) {
@@ -109,7 +109,6 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		time.Sleep(time.Second)
 
 		if lidarVal >= 50 {
-			time.Sleep(time.Second)
 			turnLeft(gpg)
 		} else if lidarVal < 30 {
 			turnRight(gpg)
