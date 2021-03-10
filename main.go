@@ -51,6 +51,16 @@ func stopMove(gpg *g.Driver) {
 	gpg.SetMotorDps(g.MOTOR_RIGHT, 0)
 }
 
+func pauseLoop(gpg *g.Driver) {
+	counter := 0
+
+	for counter < 2 {
+		time.Sleep(time.Second)
+		fmt.Println("counter: " + string(counter))
+		counter++
+	}
+}
+
 func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
 	gpg.SetLED(3, 0, 0, 255) // light on - blue (led 4 might be under chip, don't know where led 1 and 2 is or if it exists)
@@ -109,6 +119,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		time.Sleep(time.Second)
 
 		if lidarVal >= 60 {
+			pauseLoop(gpg)
 			turnLeft(gpg)
 		} else if lidarVal < 30 {
 			turnRight(gpg)
