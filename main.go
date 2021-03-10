@@ -53,8 +53,8 @@ func stopMove(gpg *g.Driver) {
 
 func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
-	//battery := g.GET_VOLTAGE_5V
-	//fmt.Println("current battery voltage: " + string(battery))
+	battery := g.GET_VOLTAGE_5V
+	fmt.Println("current battery voltage: " + string(battery))
 
 	gpg.SetLED(3, 0, 0, 255) // light on - blue (led 4 might be under chip, don't know where led 1 and 2 is or if it exists)
 	count := 0
