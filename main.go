@@ -98,7 +98,7 @@ func forwardLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 	stopMove(gpg)
 	moveForward(gpg)
 
-	for counter < 3 {
+	for counter < 2 {
 		time.Sleep(time.Second)
 		fmt.Println("forward: " + string(rune(counter)))
 		counter++
@@ -153,12 +153,13 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 			fmt.Errorf("left motor encorder not reading %+v", err)
 		}
 
+		// if lidar value is at a certain point, start tallying
 		//tally := 0
 		//if leftMotor%5 == 0{
 		//	tally++
 		//}
 
-		// 360 degrees = ~ 20cm
+		// 360 degrees = ~ 15 - 17cm
 
 		// print values into console
 		fmt.Println("______________________________") // 30 characters
