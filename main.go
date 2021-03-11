@@ -70,7 +70,7 @@ func pauseLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		fmt.Errorf("lidar sensor reading error %+v", err)
 	}
 
-	for lidarVal > 60 {
+	for lidarVal > 50 {
 		moveForward(gpg)
 	}
 }
@@ -132,7 +132,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
 		time.Sleep(time.Second)
 
-		if lidarVal >= 60 {
+		if lidarVal >= 50 {
 			pauseLoop(lidarSensor, gpg)
 		} else if lidarVal < 30 {
 			turnRight(gpg)
