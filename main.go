@@ -153,6 +153,13 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 			fmt.Errorf("left motor encorder not reading %+v", err)
 		}
 
+		//tally := 0
+		//if leftMotor%5 == 0{
+		//	tally++
+		//}
+
+		// 360 degrees = ~ 20cm
+
 		// print values into console
 		fmt.Println("______________________________") // 30 characters
 		fmt.Printf("|___________%-5d____________|\n", count)
