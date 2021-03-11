@@ -56,7 +56,7 @@ func pauseLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
 	for counter < 2 {
 		time.Sleep(time.Second)
-		fmt.Println("counter: " + string(counter))
+		fmt.Println("counter: " + string(rune(counter)))
 		counter++
 	}
 
