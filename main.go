@@ -63,7 +63,7 @@ func pauseLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 	stopMove(gpg)
 
 	gpg.SetMotorDps(g.MOTOR_LEFT, 0)
-	gpg.SetMotorDps(g.MOTOR_RIGHT, 160)
+	gpg.SetMotorDps(g.MOTOR_RIGHT, 163)
 	time.Sleep(time.Second)
 
 	err := lidarSensor.Start()
