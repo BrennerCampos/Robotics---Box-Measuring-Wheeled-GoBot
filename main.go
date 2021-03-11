@@ -63,7 +63,7 @@ func pauseLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 	stopMove(gpg)
 
 	gpg.SetMotorDps(g.MOTOR_LEFT, 0)
-	gpg.SetMotorDps(g.MOTOR_RIGHT, 163)
+	gpg.SetMotorDps(g.MOTOR_RIGHT, 165)
 	time.Sleep(time.Second)
 
 	err := lidarSensor.Start()
@@ -159,6 +159,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		fmt.Printf("|%-20s:   %-4f|\n", "Battery (v)", battery)
 		fmt.Printf("|%-20s:   %-4d|\n", "lidar sensor", lidarVal)
 		fmt.Printf("|%-20s:   %-4d|\n", "left wheel (degrees)", leftMotor%360)
+		fmt.Printf("|%-20s:   %-4f|\n", "left wheel (degrees)", g.MOTOR_TICKS_PER_DEGREE)
 
 		time.Sleep(time.Second)
 
