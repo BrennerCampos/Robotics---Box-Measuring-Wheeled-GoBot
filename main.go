@@ -71,6 +71,10 @@ func pauseLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 	}
 
 	for lidarVal > 50 {
+
+		err = lidarSensor.Start()
+		lidarVal, err = lidarSensor.Distance()
+
 		fmt.Println("____________pause___________") // 30 characters
 		fmt.Printf("|%-20s:   %-4d|\n", "lidar sensor", lidarVal)
 		moveForward(gpg)
