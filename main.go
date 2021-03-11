@@ -84,18 +84,14 @@ func pauseLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 }
 
 func forwardLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
+	counter := 0
 	moveForward(gpg)
 
-	err := lidarSensor.Start()
-	lidarVal, err := lidarSensor.Distance()
-	if err != nil {
-		fmt.Errorf("lidar sensor reading error %+v", err)
-	}
-
-	for lidarVal > 50 {
+	for counter < 3 {
 		time.Sleep(time.Second)
+		fmt.Println("counter: " + string(rune(counter)))
+		counter++
 	}
-
 }
 
 func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
