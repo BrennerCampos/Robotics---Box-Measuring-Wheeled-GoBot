@@ -60,6 +60,8 @@ func pauseLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		counter++
 	}
 
+	stopMove(gpg)
+
 	gpg.SetMotorDps(g.MOTOR_LEFT, 0)
 	gpg.SetMotorDps(g.MOTOR_RIGHT, 160)
 	time.Sleep(time.Second)
@@ -85,6 +87,7 @@ func pauseLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
 func forwardLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 	counter := 0
+	stopMove(gpg)
 	moveForward(gpg)
 
 	for counter < 3 {
@@ -151,7 +154,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
 		time.Sleep(time.Second)
 
-		if lidarVal >= 50 {
+		if lidarVal >= 70 {
 			pauseLoop(lidarSensor, gpg)
 			forwardLoop(lidarSensor, gpg)
 		} else if lidarVal < -1 {
