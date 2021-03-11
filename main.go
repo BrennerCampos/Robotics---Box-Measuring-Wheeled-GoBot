@@ -61,7 +61,7 @@ func pauseLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 	}
 
 	gpg.SetMotorDps(g.MOTOR_LEFT, 0)
-	gpg.SetMotorDps(g.MOTOR_RIGHT, 130)
+	gpg.SetMotorDps(g.MOTOR_RIGHT, 160)
 	time.Sleep(time.Second)
 
 	err := lidarSensor.Start()
@@ -71,6 +71,8 @@ func pauseLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 	}
 
 	for lidarVal > 50 {
+		fmt.Println("____________pause___________") // 30 characters
+		fmt.Printf("|%-20s:   %-4d|\n", "lidar sensor", lidarVal)
 		moveForward(gpg)
 	}
 }
