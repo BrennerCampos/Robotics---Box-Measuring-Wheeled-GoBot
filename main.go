@@ -84,13 +84,13 @@ func pauseLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		moveForward(gpg)
 	}
 
-	//counter = 0
-	//
-	//for counter < 3 {
-	//	time.Sleep(time.Second)
-	//	fmt.Println("counter: " + string(rune(counter)))
-	//	counter++
-	//}
+	counter = 0
+
+	for counter < 1 {
+		time.Sleep(time.Second)
+		fmt.Println("counter: " + string(rune(counter)))
+		counter++
+	}
 }
 
 func forwardLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
