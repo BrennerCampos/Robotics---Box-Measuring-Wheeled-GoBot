@@ -115,7 +115,7 @@ func forwardLoop(gpg *g.Driver) {
 	fmt.Println("forward loop end in: ")
 	for counter > 0 {
 		time.Sleep(time.Second)
-		fmt.Println("counter")
+		fmt.Println("counter", counter)
 		counter--
 	}
 	fmt.Println("end forward loop")
