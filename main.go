@@ -175,7 +175,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		fmt.Printf("|%-20s:   %-4d|\n", "other side (mm)", dimensions[1])
 		fmt.Printf("|%-20s:   %-4d|\n", "tally", tally)
 
-		time.Sleep(time.Millisecond * 80)
+		time.Sleep(time.Millisecond * 100)
 
 		if lidarVal >= 70 {
 			fmt.Println("entering turning loop")
