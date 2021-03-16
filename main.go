@@ -77,24 +77,24 @@ func takeTurn(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 	gpg.SetMotorDps(g.MOTOR_RIGHT, 165)
 	time.Sleep(time.Second)
 
-	err := lidarSensor.Start()
-	lidarVal, err := lidarSensor.Distance()
-	if err != nil {
-		fmt.Errorf("lidar sensor reading error %+v", err)
-	}
-	fmt.Println("90 degree turn complete????") // will confirm if loop below is necessary
-
-	for lidarVal > 50 {
-
-		err = lidarSensor.Start()
-		lidarVal, err = lidarSensor.Distance()
-		gpg.SetMotorDps(g.MOTOR_RIGHT, 160)
-		time.Sleep(time.Second)
-
-		fmt.Println("____________pause___________") // 30 characters
-		fmt.Printf("|%-20s:   %-4d|\n", "lidar sensor", lidarVal)
-		moveForward(gpg)
-	}
+	//err := lidarSensor.Start()
+	//lidarVal, err := lidarSensor.Distance()
+	//if err != nil {
+	//	fmt.Errorf("lidar sensor reading error %+v", err)
+	//}
+	//fmt.Println("90 degree turn complete????") // will confirm if loop below is necessary
+	//
+	//for lidarVal > 50 {
+	//
+	//	err = lidarSensor.Start()
+	//	lidarVal, err = lidarSensor.Distance()
+	//	gpg.SetMotorDps(g.MOTOR_RIGHT, 160)
+	//	time.Sleep(time.Second)
+	//
+	//	fmt.Println("____________pause___________") // 30 characters
+	//	fmt.Printf("|%-20s:   %-4d|\n", "lidar sensor", lidarVal)
+	//	moveForward(gpg)
+	//}
 
 	fmt.Println("90 degree turn complete!")
 
