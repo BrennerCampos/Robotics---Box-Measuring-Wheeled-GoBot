@@ -152,7 +152,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
 		// start tallying degree rotations for measurement
 		if fwdLoopCounter == 1 || fwdLoopCounter == 2 {
-			if leftMotor%3 == 0 {
+			if leftMotor%2 == 0 {
 				tally++
 			}
 		}
