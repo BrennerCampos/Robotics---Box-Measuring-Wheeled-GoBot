@@ -108,7 +108,7 @@ func takeTurn(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 }
 
 func forwardLoop(gpg *g.Driver) {
-	counter := 2
+	counter := 1
 	stopMove(gpg)
 	moveForward(gpg)
 
@@ -172,6 +172,9 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
 		fmt.Printf("|%-20s:   %-4d|\n", "lidar sensor", lidarVal)
 		fmt.Printf("|%-20s:   %-4d|\n", "left wheel (degrees)", leftMotor%360)
+		fmt.Printf("|%-20s:   %-4d|\n", "fwd counter", fwdLoopCounter)
+		fmt.Printf("|%-20s:   %-4d|\n", "one side (mm)", dimensions[0])
+		fmt.Printf("|%-20s:   %-4d|\n", "other side (mm)", dimensions[1])
 
 		time.Sleep(time.Second)
 
@@ -200,11 +203,10 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
 		if fwdLoopCounter == 1 {
 			dimensions[0] = int(float64(tally) * 22)
-			fmt.Println("One side of the box measures:", dimensions[0])
 		} else if fwdLoopCounter == 2 {
 			dimensions[1] = int(float64(tally) * 22)
-			fmt.Println("the other side of the box measures:", dimensions[1])
 		} else if fwdLoopCounter > 3 {
+			fmt.Println("measurement complete!")
 			fmt.Println("The perimeter of the box is:", dimensions[0]*dimensions[1], "mm")
 		}
 
