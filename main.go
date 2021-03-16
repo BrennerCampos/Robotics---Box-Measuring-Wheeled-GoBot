@@ -171,8 +171,8 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		fmt.Printf("|%-20s:   %-4d|\n", "lidar sensor", lidarVal)
 		fmt.Printf("|%-20s:   %-4d|\n", "left wheel (degrees)", leftMotor%360)
 		fmt.Printf("|%-20s:   %-4d|\n", "fwd counter", fwdLoopCounter)
-		fmt.Printf("|%-20s:   %-4d|\n", "one side (mm)", dimensions[0]*22)
-		fmt.Printf("|%-20s:   %-4d|\n", "other side (mm)", dimensions[1]*22)
+		fmt.Printf("|%-20s:   %-4d|\n", "one side (mm)", dimensions[0])
+		fmt.Printf("|%-20s:   %-4d|\n", "other side (mm)", dimensions[1])
 
 		time.Sleep(time.Millisecond)
 
@@ -200,9 +200,9 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		// the %5 might not work since the values are random and may not be divisible by 5, we could be missing values
 
 		if fwdLoopCounter == 1 {
-			dimensions[0] = int(float64(tally) * 22)
+			dimensions[0] = int(float64(tally) * 2.2)
 		} else if fwdLoopCounter == 2 {
-			dimensions[1] = int(float64(tally) * 22)
+			dimensions[1] = int(float64(tally) * 2.2)
 		} else if fwdLoopCounter >= 3 && fwdLoopCounter < 5 {
 			fmt.Println("measurement complete!")
 			fmt.Println("The perimeter of the box is:", dimensions[0]*dimensions[1], "mm")
