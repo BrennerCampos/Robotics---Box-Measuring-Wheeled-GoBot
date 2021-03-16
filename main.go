@@ -198,6 +198,8 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
 		// 24 - 44 cm based on %3 = 120 tallys = 1.67 mm per tally
 
+		// based on %2
+
 		// 360 degrees = ~ 150 - 170mm = 72 tallys ( based on %5)
 		//		2.2 mm per tally
 		// the %5 might not work since the values are random and may not be divisible by 5, we could be missing values
