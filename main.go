@@ -173,8 +173,8 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		fmt.Printf("|%-20s:   %-4d|\n", "lidar sensor", lidarVal)
 		fmt.Printf("|%-20s:   %-4d|\n", "left wheel (degrees)", leftMotor%360)
 		fmt.Printf("|%-20s:   %-4d|\n", "fwd counter", fwdLoopCounter)
-		fmt.Printf("|%-20s:   %-4d|\n", "one side (mm)", dimensions[0])
-		fmt.Printf("|%-20s:   %-4d|\n", "other side (mm)", dimensions[1])
+		fmt.Printf("|%-20s:   %-4d|\n", "one side (mm)", dimensions[0]*22)
+		fmt.Printf("|%-20s:   %-4d|\n", "other side (mm)", dimensions[1]*22)
 
 		time.Sleep(time.Millisecond)
 
