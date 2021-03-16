@@ -111,29 +111,35 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 	count := 0
 	dimensions := [2]int{0, 0}
 
-	for { // for(ever) loop to keep robot running
+	err := lidarSensor.Start()
+	lidarVal, err := lidarSensor.Distance()
+	if err != nil {
+		fmt.Errorf("lidar sensor reading error %+v", err)
+	}
 
-		battery, err := gpg.GetBatteryVoltage()
-		if err != nil {
-			fmt.Errorf("Unable to get battery voltage %+v", err)
-		}
+	if lidarVal >= 70 {
+		moveForward(gpg)
+	} else {
 
-		// values of sensors
-		err = lidarSensor.Start()
-		lidarVal, err := lidarSensor.Distance()
-		if err != nil {
-			fmt.Errorf("lidar sensor reading error %+v", err)
-		}
-		count++
+		for { // for(ever) loop to keep robot running
 
-		leftMotor, err := gpg.GetMotorEncoder(g.MOTOR_LEFT)
-		if err != nil {
-			fmt.Errorf("left motor encorder not reading %+v", err)
-		}
+			battery, err := gpg.GetBatteryVoltage()
+			if err != nil {
+				fmt.Errorf("Unable to get battery voltage %+v", err)
+			}
 
-		if lidarVal >= 70 { // if not starting at box
-			moveForward(gpg)
-		} else {
+			// values of sensors
+			err = lidarSensor.Start()
+			lidarVal, err = lidarSensor.Distance()
+			if err != nil {
+				fmt.Errorf("lidar sensor reading error %+v", err)
+			}
+			count++
+
+			leftMotor, err := gpg.GetMotorEncoder(g.MOTOR_LEFT)
+			if err != nil {
+				fmt.Errorf("left motor encorder not reading %+v", err)
+			}
 
 			// start tallying degree rotations for measurement
 			if fwdLoopCounter == 1 || fwdLoopCounter == 2 {
@@ -201,7 +207,6 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 				stopMove(gpg)
 			}
 
-		}
-
+		} // end of for-ever
 	}
 }
