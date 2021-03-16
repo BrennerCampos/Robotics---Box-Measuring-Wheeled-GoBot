@@ -150,10 +150,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 			fmt.Errorf("left motor encorder not reading %+v", err)
 		}
 
-		// 360 degrees = ~ 150 - 170mm = 72 tallys ( based on %5)
-		//		2.2 mm per tally
-		// the %5 might not work since the values are random and may not be divisible by 5, we could be missing values
-
+		// start tallying degree rotations for measurement
 		if fwdLoopCounter == 1 || fwdLoopCounter == 2 {
 			if lidarVal >= 10 && lidarVal <= 25 { // precautionary if statement, might not need
 				if leftMotor%5 == 0 {
@@ -166,6 +163,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		fmt.Println("______________________________") // 30 characters
 		fmt.Printf("|___________%-5d____________|\n", count)
 
+		// battery warning
 		if battery <= 9 {
 			fmt.Printf("|%-20s:   %-4f|\n", "Battery low!!", battery)
 		} else {
@@ -196,10 +194,16 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 			gpg.SetLED(3, 255, 0, 0) // red
 		}
 
+		// 360 degrees = ~ 150 - 170mm = 72 tallys ( based on %5)
+		//		2.2 mm per tally
+		// the %5 might not work since the values are random and may not be divisible by 5, we could be missing values
+
 		if fwdLoopCounter == 1 {
-			dimensions[0] = int(float64(tally) * 2.2)
+			dimensions[0] = int(float64(tally) * 22)
+			fmt.Println("One side of the box measures:", dimensions[0])
 		} else if fwdLoopCounter == 2 {
-			dimensions[1] = int(float64(tally) * 2.2)
+			dimensions[1] = int(float64(tally) * 22)
+			fmt.Println("the other side of the box measures:", dimensions[1])
 		} else if fwdLoopCounter > 3 {
 			fmt.Println("The perimeter of the box is:", dimensions[0]*dimensions[1], "mm")
 		}
