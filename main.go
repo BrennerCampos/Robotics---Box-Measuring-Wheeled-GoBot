@@ -114,7 +114,7 @@ func forwardLoop(gpg *g.Driver) {
 
 	fmt.Println("forward loop end in: ")
 	for counter > 0 {
-		time.Sleep(time.Second)
+		time.Sleep(time.Millisecond * 800)
 		fmt.Println(counter)
 		counter--
 	}
@@ -174,7 +174,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		fmt.Printf("|%-20s:   %-4d|\n", "one side (mm)", dimensions[0])
 		fmt.Printf("|%-20s:   %-4d|\n", "other side (mm)", dimensions[1])
 
-		time.Sleep(time.Millisecond * 100)
+		time.Sleep(time.Millisecond * 125)
 
 		if lidarVal >= 70 {
 			fmt.Println("entering turning loop")
