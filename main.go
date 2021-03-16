@@ -131,70 +131,76 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 			fmt.Errorf("left motor encorder not reading %+v", err)
 		}
 
-		// start tallying degree rotations for measurement
-		if fwdLoopCounter == 1 || fwdLoopCounter == 2 {
-			if leftMotor%2 == 0 {
-				tally++
-			}
-		}
-
-		// print values into console
-		fmt.Println("______________________________") // 30 characters
-		fmt.Printf("|___________%-5d____________|\n", count)
-
-		// battery warning
-		if battery <= 9 {
-			fmt.Printf("|%-20s:   %-4f|\n", "Battery low!!", battery)
-		} else {
-			fmt.Printf("|%-20s:   %-4f|\n", "Battery (v)", battery)
-		}
-
-		fmt.Printf("|%-20s:   %-4d|\n", "lidar sensor", lidarVal)
-		fmt.Printf("|%-20s:   %-4d|\n", "left wheel (degrees)", leftMotor%360)
-		fmt.Printf("|%-20s:   %-4d|\n", "fwd counter", fwdLoopCounter)
-		fmt.Printf("|%-20s:   %-4d|\n", "one side (mm)", dimensions[0])
-		fmt.Printf("|%-20s:   %-4d|\n", "other side (mm)", dimensions[1])
-		fmt.Printf("|%-20s:   %-4d|\n", "tally", tally)
-
-		time.Sleep(time.Millisecond * 100)
-
-		if lidarVal >= 70 {
-			fmt.Println("entering turning loop")
-			takeTurn(lidarSensor, gpg)
-
-			fmt.Println("entering forward loop")
-			forwardLoop(gpg)
-		} else if lidarVal >= 10 && lidarVal < 60 {
+		if lidarVal >= 70 { // if not starting at box
 			moveForward(gpg)
-		}
-
-		// color values based on lidar values
-		if lidarVal <= 10 {
-			gpg.SetLED(3, 255, 128, 0) // orange
-		} else if lidarVal > 10 && lidarVal <= 30 {
-			gpg.SetLED(3, 0, 255, 0) // green
 		} else {
-			gpg.SetLED(3, 255, 0, 0) // red
-		}
 
-		// 24 - 44 cm based on %3 = 120 tallys = 1.67 mm per tally
+			// start tallying degree rotations for measurement
+			if fwdLoopCounter == 1 || fwdLoopCounter == 2 {
+				if leftMotor%2 == 0 {
+					tally++
+				}
+			}
 
-		// based on %2 25 - 47 cm
-		// 20 - 40 = 180 tallys = 1.11 mm per tally
+			// print values into console
+			fmt.Println("______________________________") // 30 characters
+			fmt.Printf("|___________%-5d____________|\n", count)
 
-		// 360 degrees = ~ 150 - 170mm = 72 tallys ( based on %5)
-		//		2.2 mm per tally
-		// the %5 might not work since the values are random and may not be divisible by 5, we could be missing values
+			// battery warning
+			if battery <= 9 {
+				fmt.Printf("|%-20s:   %-4f|\n", "Battery low!!", battery)
+			} else {
+				fmt.Printf("|%-20s:   %-4f|\n", "Battery (v)", battery)
+			}
 
-		if fwdLoopCounter == 1 {
-			dimensions[0] = int(float64(tally) * 1.11)
-		} else if fwdLoopCounter == 2 {
-			dimensions[1] = int(float64(tally) * 1.11)
-		} else if fwdLoopCounter >= 3 && fwdLoopCounter < 5 {
-			fmt.Println("measurement complete!")
-			fmt.Println("The perimeter of the box is:", dimensions[0]*dimensions[1], "mm")
-		} else if fwdLoopCounter >= 5 {
-			stopMove(gpg)
+			fmt.Printf("|%-20s:   %-4d|\n", "lidar sensor", lidarVal)
+			fmt.Printf("|%-20s:   %-4d|\n", "left wheel (degrees)", leftMotor%360)
+			fmt.Printf("|%-20s:   %-4d|\n", "fwd counter", fwdLoopCounter)
+			fmt.Printf("|%-20s:   %-4d|\n", "one side (cm)", dimensions[0])
+			fmt.Printf("|%-20s:   %-4d|\n", "other side (cm)", dimensions[1])
+			fmt.Printf("|%-20s:   %-4d|\n", "tally", tally)
+
+			time.Sleep(time.Millisecond * 100)
+
+			if lidarVal >= 70 {
+				fmt.Println("entering turning loop")
+				takeTurn(lidarSensor, gpg)
+
+				fmt.Println("entering forward loop")
+				forwardLoop(gpg)
+			} else if lidarVal >= 10 && lidarVal < 60 {
+				moveForward(gpg)
+			}
+
+			// color values based on lidar values
+			if lidarVal <= 10 {
+				gpg.SetLED(3, 255, 128, 0) // orange
+			} else if lidarVal > 10 && lidarVal <= 30 {
+				gpg.SetLED(3, 0, 255, 0) // green
+			} else {
+				gpg.SetLED(3, 255, 0, 0) // red
+			}
+
+			// 24 - 44 cm based on %3 = 120 tallys = 1.67 mm per tally
+
+			// based on %2 25 - 47 cm
+			// 20 - 40 = 180 tallys = 1.11 mm per tally
+
+			// 360 degrees = ~ 150 - 170mm = 72 tallys ( based on %5)
+			//		2.2 mm per tally
+			// the %5 might not work since the values are random and may not be divisible by 5, we could be missing values
+
+			if fwdLoopCounter == 1 {
+				dimensions[0] = int(float64(tally) * 1.11)
+			} else if fwdLoopCounter == 2 {
+				dimensions[1] = int(float64(tally) * 1.11)
+			} else if fwdLoopCounter >= 3 && fwdLoopCounter < 5 {
+				fmt.Println("measurement complete!")
+				fmt.Println("The perimeter of the box is:", dimensions[0]*dimensions[1], "cm")
+			} else if fwdLoopCounter >= 5 {
+				stopMove(gpg)
+			}
+
 		}
 
 	}
