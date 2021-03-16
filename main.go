@@ -9,12 +9,22 @@ import (
 	"time"
 )
 
+var (
+	fwdLoopCounter int // used to keep track how many times we circle around the box
+	tally          int // used to count increments of wheel rotation for measuring distance
+)
+
 func main() {
+
+	// https://github.com/hybridgroup/gobot/blob/release/platforms/dexter/gopigo3/driver.go#L88
+
 	//We create the adaptors to connect the GoPiGo3 board with the Raspberry Pi 3
 	raspiAdapter := raspi.NewAdaptor()
 	gopigo3 := g.NewDriver(raspiAdapter)
 
 	lidarSensor := i2c.NewLIDARLiteDriver(raspiAdapter)
+	fwdLoopCounter = 0
+	tally = 0
 
 	// local variable that holds anonymous function
 	// robot framework that creates a new thread and run this function
@@ -51,13 +61,14 @@ func stopMove(gpg *g.Driver) {
 	gpg.SetMotorDps(g.MOTOR_RIGHT, 0)
 }
 
-func pauseLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
-	counter := 0
+func takeTurn(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
+	counter := 3
 
-	for counter < 3 {
+	fmt.Println("90 degree turn in: ")
+	for counter > 0 {
 		time.Sleep(time.Second)
-		fmt.Println("90: " + string(rune(counter)))
-		counter++
+		fmt.Println(counter)
+		counter--
 	}
 
 	stopMove(gpg)
@@ -71,6 +82,7 @@ func pauseLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 	if err != nil {
 		fmt.Errorf("lidar sensor reading error %+v", err)
 	}
+	fmt.Println("90 degree turn complete????") // will confirm if loop below is necessary
 
 	for lidarVal > 50 {
 
@@ -84,54 +96,39 @@ func pauseLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		moveForward(gpg)
 	}
 
+	fmt.Println("90 degree turn complete!")
+
 	counter = 0
 
 	for counter < 1 {
 		time.Sleep(time.Second)
-		fmt.Println("counter: " + string(rune(counter)))
+		fmt.Println("extra delay")
 		counter++
 	}
 }
 
-func forwardLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
-	counter := 0
+func forwardLoop(gpg *g.Driver) {
+	counter := 2
 	stopMove(gpg)
 	moveForward(gpg)
 
-	for counter < 2 {
+	fmt.Println("forward loop end in: ")
+	for counter > 0 {
 		time.Sleep(time.Second)
-		fmt.Println("forward: " + string(rune(counter)))
-		counter++
+		fmt.Println("counter")
+		counter--
 	}
+	fmt.Println("end forward loop")
+
+	tally = 0
+	fwdLoopCounter++
 }
 
 func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
 	gpg.SetLED(3, 0, 0, 255) // light on - blue (led 4 might be under chip, don't know where led 1 and 2 is or if it exists)
 	count := 0
-
-	// --   START
-
-	//  - first, check lidar to see if it's facing the box or not
-
-	// -- LOOP 1 - CHECKING
-	//  - if not, move forward until we see 'something' (the box), and start recording distance
-
-	// -- LOOP 2 - MOVING and STOPPING
-	//  - if yes, move forward until we no longer see the box, move forward to compensate for body of robot + 25 cm distance worth
-	// - then turn 90 degrees clockwise
-	// after turn, continue moving forward, recording distance as soon as it sees the box (around 30-50ish from our calculations)
-	// check that the lidar values stay relatively the same, otherwise if they are rising or diminishing it might mean the robot is not perpendicular
-
-	// when done with second side, stop robot, do calculations to get area + perimeter
-
-	// --    END
-
-	/*
-		look into:
-		setMotorPosition - set left or right wheel a # of degrees
-		getMotorEncoder - read motor encoder in degrees
-	*/
+	dimensions := [2]int{0, 0}
 
 	for { // for(ever) loop to keep robot running
 
@@ -153,47 +150,58 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 			fmt.Errorf("left motor encorder not reading %+v", err)
 		}
 
-		// if lidar value is at a certain point, start tallying
-		//tally := 0
-		//if leftMotor%5 == 0{
-		//	tally++
-		//}
+		// 360 degrees = ~ 150 - 170mm = 72 tallys ( based on %5)
+		//		2.2 mm per tally
+		// the %5 might not work since the values are random and may not be divisible by 5, we could be missing values
 
-		// 360 degrees = ~ 15 - 17cm
+		if fwdLoopCounter == 1 || fwdLoopCounter == 2 {
+			if lidarVal >= 10 && lidarVal <= 25 { // precautionary if statement, might not need
+				if leftMotor%5 == 0 {
+					tally++
+				}
+			}
+		}
 
 		// print values into console
 		fmt.Println("______________________________") // 30 characters
 		fmt.Printf("|___________%-5d____________|\n", count)
-		fmt.Printf("|%-20s:   %-4f|\n", "Battery (v)", battery)
+
+		if battery <= 9 {
+			fmt.Printf("|%-20s:   %-4f|\n", "Battery low!!", battery)
+		} else {
+			fmt.Printf("|%-20s:   %-4f|\n", "Battery (v)", battery)
+		}
+
 		fmt.Printf("|%-20s:   %-4d|\n", "lidar sensor", lidarVal)
 		fmt.Printf("|%-20s:   %-4d|\n", "left wheel (degrees)", leftMotor%360)
-		fmt.Printf("|%-20s:   %-4f|\n", "left wheel (degrees)", g.MOTOR_TICKS_PER_DEGREE)
 
 		time.Sleep(time.Second)
 
 		if lidarVal >= 70 {
-			pauseLoop(lidarSensor, gpg)
-			forwardLoop(lidarSensor, gpg)
-		} else if lidarVal < -1 {
-			turnRight(gpg)
+			fmt.Println("entering turning loop")
+			takeTurn(lidarSensor, gpg)
 
-		} else if lidarVal >= 10 && lidarVal < 60 {
+			fmt.Println("entering forward loop")
+			forwardLoop(gpg)
+		} else if lidarVal >= 10 && lidarVal < 70 {
 			moveForward(gpg)
 		}
 
-		if lidarVal > 10 && lidarVal <= 60 {
+		// color values based on lidar values
+		if lidarVal <= 10 {
+			gpg.SetLED(3, 255, 128, 0) // orange
+		} else if lidarVal > 10 && lidarVal <= 30 {
 			gpg.SetLED(3, 0, 255, 0) // green
 		} else {
 			gpg.SetLED(3, 255, 0, 0) // red
 		}
 
-		// color values based on lidar values
-		if lidarVal <= 10 { //the higher the number, the further it stops
-			gpg.SetLED(3, 255, 128, 0) // orange
-		} else if lidarVal > 10 && lidarVal <= 60 {
-			gpg.SetLED(3, 0, 255, 0) // green
-		} else {
-			gpg.SetLED(3, 255, 0, 0) // red
+		if fwdLoopCounter == 1 {
+			dimensions[0] = int(float64(tally) * 2.2)
+		} else if fwdLoopCounter == 2 {
+			dimensions[1] = int(float64(tally) * 2.2)
+		} else if fwdLoopCounter > 3 {
+			fmt.Println("The perimeter of the box is:", dimensions[0]*dimensions[1], "mm")
 		}
 
 	}
