@@ -205,7 +205,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 			dimensions[0] = int(float64(tally) * 22)
 		} else if fwdLoopCounter == 2 {
 			dimensions[1] = int(float64(tally) * 22)
-		} else if fwdLoopCounter > 3 {
+		} else if fwdLoopCounter >= 3 {
 			fmt.Println("measurement complete!")
 			fmt.Println("The perimeter of the box is:", dimensions[0]*dimensions[1], "mm")
 		}
