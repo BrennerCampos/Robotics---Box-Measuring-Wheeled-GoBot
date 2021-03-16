@@ -108,7 +108,7 @@ func takeTurn(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 }
 
 func forwardLoop(gpg *g.Driver) {
-	counter := 1
+	counter := 2
 	stopMove(gpg)
 	moveForward(gpg)
 
