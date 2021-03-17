@@ -191,7 +191,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		fmt.Printf("|%-20s:   %-4d|\n", "one side (cm)", dimensions[0])
 		fmt.Printf("|%-20s:   %-4d|\n", "other side (cm)", dimensions[1])
 		fmt.Printf("|%-20s:   %-4d|\n", "tally", tally)
-		fmt.Printf("|%-20s:   %-4d|\n", "errCounter", errCounter)
+		fmt.Printf("|%-20s:   %-4d|\n", "errCounter", lidarErr)
 
 		// proportional control
 		currentError := 0
