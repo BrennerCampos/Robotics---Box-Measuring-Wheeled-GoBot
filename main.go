@@ -179,17 +179,19 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		fmt.Printf("|%-20s:   %-4d|\n", "other side (cm)", dimensions[1])
 		fmt.Printf("|%-20s:   %-4d|\n", "tally", tally)
 
-		multi := 0
-
+		// feedback control - correct for un-aligned drift based on lidar
+		//		as shelly drifts away from box,
+		currentError := 0
 		if lidarVal < 13 {
-			multi = 0
+			currentError = 0
 		} else if lidarVal > 13 && lidarVal < 20 {
-			multi = 30
+			currentError = 30
 		} else if lidarVal >= 20 {
-			multi = 75
+			currentError = 75
 		}
-		time.Sleep(time.Millisecond * (time.Duration(100 + multi)))
+		time.Sleep(time.Millisecond * (time.Duration(100 + currentError)))
 
+		// handle how to turn around the corner of a box
 		if lidarVal >= 70 {
 			fmt.Println("entering turning loop")
 			takeTurn(lidarSensor, gpg)
@@ -201,9 +203,9 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		}
 
 		// color values based on lidar values
-		if lidarVal <= 10 {
+		if lidarVal <= 4 {
 			gpg.SetLED(3, 255, 128, 0) // orange
-		} else if lidarVal > 10 && lidarVal <= 30 {
+		} else if lidarVal > 5 && lidarVal <= 10 {
 			gpg.SetLED(3, 0, 255, 0) // green
 		} else {
 			gpg.SetLED(3, 255, 0, 0) // red
@@ -216,7 +218,6 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
 		// 360 degrees = ~ 150 - 170mm = 72 tallys ( based on %5)
 		//		2.2 mm per tally
-		// the %5 might not work since the values are random and may not be divisible by 5, we could be missing values
 
 		if fwdLoopCounter == 1 {
 			dimensions[0] = int(float64(tally) * 1.11)
@@ -224,7 +225,9 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 			dimensions[1] = int(float64(tally) * 1.11)
 		} else if fwdLoopCounter >= 3 && fwdLoopCounter < 5 {
 			fmt.Println("measurement complete!")
-			fmt.Println("The perimeter of the box is:", dimensions[0]*dimensions[1], "cm")
+			fmt.Println("The area of the box is:", dimensions[0]*dimensions[1], "cm^2")
+			fmt.Println("The perimeter of the box is:", (dimensions[0]*2)+(dimensions[1]*2), "cm")
+
 		} else if fwdLoopCounter >= 5 {
 			stopMove(gpg)
 		}
