@@ -208,7 +208,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		time.Sleep(time.Millisecond * (time.Duration(100 + currentError)))
 
 		if lidarVal >= 20 || lidarVal < 70 {
-			fwdErr = 2
+			fwdErr = 1
 		}
 		fmt.Printf("|%-20s:   %-4d|\n", "errCounter", fwdErr)
 
