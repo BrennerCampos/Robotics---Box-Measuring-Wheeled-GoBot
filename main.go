@@ -13,6 +13,7 @@ var (
 	fwdLoopCounter int // used to keep track how many times we circle around the box
 	tally          int // used to count increments of wheel rotation for measuring distance
 	errCounter     int
+	fwdErr         int
 )
 
 func main() {
@@ -119,6 +120,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 	dimensions := [2]int{0, 0}
 
 	errorDim := [2]int{0, 0}
+	fwdErr = 0
 
 	err := lidarSensor.Start()
 	lidarVal, err := lidarSensor.Distance()
@@ -205,8 +207,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		}
 		time.Sleep(time.Millisecond * (time.Duration(100 + currentError)))
 
-		fwdErr := 0
-		if lidarVal >= 20 && lidarVal < 70 {
+		if lidarVal >= 20 || lidarVal < 70 {
 			fwdErr = 2
 		}
 		fmt.Printf("|%-20s:   %-4d|\n", "errCounter", fwdErr)
