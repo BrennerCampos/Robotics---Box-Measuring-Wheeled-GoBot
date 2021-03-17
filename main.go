@@ -65,10 +65,11 @@ func stopMove(gpg *g.Driver) {
 
 func takeTurn(gpg *g.Driver) {
 	counter := 3 // *********** should be 3
+	correct := counter
 
 	fmt.Println("90 degree turn in: ")
 	for counter > 0 {
-		time.Sleep(time.Millisecond + time.Duration(250*counter))
+		time.Sleep(time.Millisecond + time.Duration(250*correct))
 		fmt.Println(counter)
 		counter--
 	}
