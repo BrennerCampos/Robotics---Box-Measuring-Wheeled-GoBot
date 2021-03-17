@@ -64,7 +64,7 @@ func stopMove(gpg *g.Driver) {
 }
 
 func takeTurn(gpg *g.Driver) {
-	counter := 3
+	counter := 5
 
 	fmt.Println("90 degree turn in: ")
 	for counter > 0 {
@@ -193,6 +193,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		fmt.Printf("|%-20s:   %-4d|\n", "one side (cm)", dimensions[0])
 		fmt.Printf("|%-20s:   %-4d|\n", "other side (cm)", dimensions[1])
 		fmt.Printf("|%-20s:   %-4d|\n", "tally", tally)
+		fmt.Printf("|%-20s:   %-4d|\n", "errCounter", errCounter)
 
 		// proportional control
 		currentError := 0
@@ -208,9 +209,8 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		time.Sleep(time.Millisecond * (time.Duration(100 + currentError)))
 
 		if lidarVal >= 20 || lidarVal < 70 {
-			fwdErr = 1
+			fwdErr = 1 // fwdErr = 1 @ 10 cm; every 2 cm + another 1 just about
 		}
-		fmt.Printf("|%-20s:   %-4d|\n", "errCounter", fwdErr)
 
 		// handle how to turn around the corner of a box
 		if lidarVal >= 70 {
@@ -244,14 +244,14 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 			dimensions[0] = int(float64(tally) * 1.11)
 
 			if lidarVal <= 4 || lidarVal > 9 {
-				errorDim[0] = int(float64(tally) * 1.11)
+				errorDim[0] = int(float64(errCounter) * 1.11)
 			}
 
 		} else if fwdLoopCounter == 2 {
 			dimensions[1] = int(float64(tally) * 1.11)
 
 			if lidarVal <= 4 || lidarVal > 9 {
-				errorDim[1] = int(float64(tally) * 1.11)
+				errorDim[1] = int(float64(errCounter) * 1.11)
 			}
 
 		} else if fwdLoopCounter >= 3 && fwdLoopCounter < 5 {
