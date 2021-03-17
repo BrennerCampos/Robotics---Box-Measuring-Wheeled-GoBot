@@ -62,7 +62,7 @@ func stopMove(gpg *g.Driver) {
 	gpg.SetMotorDps(g.MOTOR_RIGHT, 0)
 }
 
-func takeTurn(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
+func takeTurn(gpg *g.Driver) {
 	counter := 3
 
 	fmt.Println("90 degree turn in: ")
@@ -89,10 +89,11 @@ func takeTurn(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 	fmt.Println()
 }
 
-func forwardLoop(gpg *g.Driver) {
-	counter := 2
+func forwardLoop(lidarErr int, gpg *g.Driver) {
 	stopMove(gpg)
 	moveForward(gpg)
+
+	counter := 2
 
 	fmt.Println("forward loop end in: ")
 	for counter > 0 {
@@ -190,9 +191,9 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
 		// proportional control
 		currentError := 0
-		if lidarVal < 13 {
+		if lidarVal < 13 { // if under 13, we are in our sweet spot, don't adjust
 			currentError = 0
-		} else if lidarVal > 13 && lidarVal < 20 {
+		} else if lidarVal > 13 && lidarVal < 20 { // else keep adding error a little more for subsequent rising ranges
 			currentError = 30
 		} else if lidarVal >= 20 && lidarVal < 70 {
 			currentError = 75
@@ -201,13 +202,18 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		}
 		time.Sleep(time.Millisecond * (time.Duration(100 + currentError)))
 
+		fwdErr := 0
+		if lidarVal >= 20 && lidarVal < 70 {
+			fwdErr = 1
+		}
+
 		// handle how to turn around the corner of a box
 		if lidarVal >= 70 {
 			fmt.Println("entering turning loop")
-			takeTurn(lidarSensor, gpg)
+			takeTurn(gpg)
 
 			fmt.Println("entering forward loop")
-			forwardLoop(gpg)
+			forwardLoop(fwdErr, gpg)
 		} else if lidarVal >= 10 && lidarVal < 60 {
 			moveForward(gpg)
 		}
