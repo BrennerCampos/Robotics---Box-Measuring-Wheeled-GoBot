@@ -208,7 +208,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
 		fwdErr := 0
 		if lidarVal >= 20 && lidarVal < 70 {
-			fwdErr = 1
+			fwdErr = 2
 		}
 
 		// handle how to turn around the corner of a box
