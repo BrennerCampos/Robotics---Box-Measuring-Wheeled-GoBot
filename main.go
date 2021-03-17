@@ -64,7 +64,7 @@ func stopMove(gpg *g.Driver) {
 }
 
 func takeTurn(gpg *g.Driver) {
-	counter := 5
+	counter := 5 // *********** should be 3
 
 	fmt.Println("90 degree turn in: ")
 	for counter > 0 {
@@ -117,10 +117,12 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
 	gpg.SetLED(3, 0, 0, 255) // light on - blue (led 4 might be under chip, don't know where led 1 and 2 is or if it exists)
 	count := 0
-	dimensions := [2]int{0, 0}
+	rawDim := [2]float64{0, 0}
 
-	errorDim := [2]int{0, 0}
+	errorDim := [2]float64{0, 0}
 	fwdErr = 0
+
+	correctDim := [2]float64{0, 0}
 
 	err := lidarSensor.Start()
 	lidarVal, err := lidarSensor.Distance()
@@ -190,8 +192,8 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		fmt.Printf("|%-20s:   %-4d|\n", "lidar sensor", lidarVal)
 		fmt.Printf("|%-20s:   %-4d|\n", "left wheel (degrees)", leftMotor%360)
 		fmt.Printf("|%-20s:   %-4d|\n", "fwd counter", fwdLoopCounter)
-		fmt.Printf("|%-20s:   %-4d|\n", "one side (cm)", dimensions[0])
-		fmt.Printf("|%-20s:   %-4d|\n", "other side (cm)", dimensions[1])
+		fmt.Printf("|%-20s:   %-4d|\n", "one side (cm)", rawDim[0])
+		fmt.Printf("|%-20s:   %-4d|\n", "other side (cm)", rawDim[1])
 		fmt.Printf("|%-20s:   %-4d|\n", "tally", tally)
 		fmt.Printf("|%-20s:   %-4d|\n", "errCounter", errCounter)
 
@@ -241,23 +243,35 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		//		2.2 mm per tally
 
 		if fwdLoopCounter == 1 {
-			dimensions[0] = int(float64(tally) * 1.11)
+			rawDim[0] = float64(tally) * 1.11
 
 			if lidarVal <= 4 || lidarVal > 9 {
-				errorDim[0] = int(float64(errCounter) * 1.11)
+				errorDim[0] = float64(errCounter) * 1.11 / float64(errCounter)
+
+				if lidarVal <= 4 {
+					correctDim[0] = rawDim[0] - errorDim[0]
+				} else if lidarVal > 9 {
+					correctDim[0] = rawDim[0] + errorDim[0]
+				}
 			}
 
 		} else if fwdLoopCounter == 2 {
-			dimensions[1] = int(float64(tally) * 1.11)
+			rawDim[1] = float64(tally) * 1.11
 
 			if lidarVal <= 4 || lidarVal > 9 {
-				errorDim[1] = int(float64(errCounter) * 1.11)
+				errorDim[1] = float64(errCounter) * 1.11 / float64(errCounter)
+
+				if lidarVal <= 4 {
+					correctDim[1] = rawDim[1] - errorDim[1]
+				} else if lidarVal > 9 {
+					correctDim[1] = rawDim[1] + errorDim[1]
+				}
 			}
 
 		} else if fwdLoopCounter >= 3 && fwdLoopCounter < 5 {
 			fmt.Println("measurement complete!")
-			fmt.Println("The area of the box is:", dimensions[0]*dimensions[1], "cm^2")
-			fmt.Println("The perimeter of the box is:", (dimensions[0]*2)+(dimensions[1]*2), "cm")
+			fmt.Println("The area of the box is:", correctDim[0]*correctDim[1], "cm^2")
+			fmt.Println("The perimeter of the box is:", (correctDim[0]*2)+(correctDim[1]*2), "cm")
 
 		} else if fwdLoopCounter >= 5 {
 			stopMove(gpg)
