@@ -68,7 +68,7 @@ func takeTurn(gpg *g.Driver) {
 
 	fmt.Println("90 degree turn in: ")
 	for counter > 0 {
-		time.Sleep(time.Millisecond + time.Duration(200*counter))
+		time.Sleep(time.Millisecond + time.Duration(250*counter))
 		fmt.Println(counter)
 		counter--
 	}
