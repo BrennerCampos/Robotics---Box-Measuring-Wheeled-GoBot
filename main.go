@@ -12,6 +12,7 @@ import (
 var (
 	fwdLoopCounter int // used to keep track how many times we circle around the box
 	tally          int // used to count increments of wheel rotation for measuring distance
+	errCounter     int
 )
 
 func main() {
@@ -102,6 +103,7 @@ func forwardLoop(gpg *g.Driver) {
 	fmt.Println("end forward loop\n")
 
 	tally = 0
+	errCounter = 0
 	fwdLoopCounter++
 }
 
@@ -110,6 +112,8 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 	gpg.SetLED(3, 0, 0, 255) // light on - blue (led 4 might be under chip, don't know where led 1 and 2 is or if it exists)
 	count := 0
 	dimensions := [2]int{0, 0}
+
+	errorDim := [2]int{0, 0}
 
 	err := lidarSensor.Start()
 	lidarVal, err := lidarSensor.Distance()
@@ -158,6 +162,10 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		if fwdLoopCounter == 1 || fwdLoopCounter == 2 {
 			if leftMotor%2 == 0 {
 				tally++
+
+				if lidarVal <= 4 || lidarVal > 9 {
+					errCounter++
+				}
 			}
 		}
 
@@ -178,16 +186,18 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		fmt.Printf("|%-20s:   %-4d|\n", "one side (cm)", dimensions[0])
 		fmt.Printf("|%-20s:   %-4d|\n", "other side (cm)", dimensions[1])
 		fmt.Printf("|%-20s:   %-4d|\n", "tally", tally)
+		fmt.Printf("|%-20s:   %-4d|\n", "errCounter", errCounter)
 
-		// feedback control - correct for un-aligned drift based on lidar
-		//		as shelly drifts away from box,
+		// proportional control
 		currentError := 0
 		if lidarVal < 13 {
 			currentError = 0
 		} else if lidarVal > 13 && lidarVal < 20 {
 			currentError = 30
-		} else if lidarVal >= 20 {
+		} else if lidarVal >= 20 && lidarVal < 70 {
 			currentError = 75
+		} else if lidarVal >= 70 { // if the lidar is no longer "seeing the box"
+
 		}
 		time.Sleep(time.Millisecond * (time.Duration(100 + currentError)))
 
@@ -221,8 +231,18 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 
 		if fwdLoopCounter == 1 {
 			dimensions[0] = int(float64(tally) * 1.11)
+
+			if lidarVal <= 4 || lidarVal > 9 {
+				errorDim[0] = int(float64(tally) * 1.11)
+			}
+
 		} else if fwdLoopCounter == 2 {
 			dimensions[1] = int(float64(tally) * 1.11)
+
+			if lidarVal <= 4 || lidarVal > 9 {
+				errorDim[1] = int(float64(tally) * 1.11)
+			}
+
 		} else if fwdLoopCounter >= 3 && fwdLoopCounter < 5 {
 			fmt.Println("measurement complete!")
 			fmt.Println("The area of the box is:", dimensions[0]*dimensions[1], "cm^2")
