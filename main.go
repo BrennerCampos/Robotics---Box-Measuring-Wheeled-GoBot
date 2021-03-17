@@ -190,8 +190,6 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		}
 		time.Sleep(time.Millisecond * (time.Duration(100 + multi)))
 
-		time.Sleep(time.Millisecond * 100)
-
 		if lidarVal >= 70 {
 			fmt.Println("entering turning loop")
 			takeTurn(lidarSensor, gpg)
