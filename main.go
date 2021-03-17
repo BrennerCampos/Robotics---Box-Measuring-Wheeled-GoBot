@@ -95,6 +95,10 @@ func forwardLoop(lidarErr int, gpg *g.Driver) {
 
 	counter := 2
 
+	if lidarErr > 0 {
+		counter = counter + lidarErr
+	}
+
 	fmt.Println("forward loop end in: ")
 	for counter > 0 {
 		time.Sleep(time.Millisecond * 800)
