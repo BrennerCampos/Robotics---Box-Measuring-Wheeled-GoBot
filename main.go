@@ -172,7 +172,7 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 			if leftMotor%2 == 0 {
 				tally++
 
-				if lidarVal <= 4 || lidarVal > 9 {
+				if lidarVal <= 3 || lidarVal > 15 {
 					errCounter++
 				}
 			}
@@ -245,12 +245,12 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		if fwdLoopCounter == 1 {
 			rawDim[0] = float64(tally) * 1.11
 
-			if lidarVal <= 4 || lidarVal > 9 {
+			if lidarVal <= 3 || lidarVal > 15 {
 				errorDim[0] = float64(errCounter) * 1.11 / float64(errCounter)
 
-				if lidarVal <= 4 {
+				if lidarVal <= 3 {
 					correctDim[0] = rawDim[0] - errorDim[0]
-				} else if lidarVal > 9 {
+				} else if lidarVal > 15 {
 					correctDim[0] = rawDim[0] + errorDim[0]
 				}
 			}
@@ -258,12 +258,12 @@ func robotRunLoop(lidarSensor *i2c.LIDARLiteDriver, gpg *g.Driver) {
 		} else if fwdLoopCounter == 2 {
 			rawDim[1] = float64(tally) * 1.11
 
-			if lidarVal <= 4 || lidarVal > 9 {
+			if lidarVal <= 3 || lidarVal > 15 {
 				errorDim[1] = float64(errCounter) * 1.11 / float64(errCounter)
 
-				if lidarVal <= 4 {
+				if lidarVal <= 3 {
 					correctDim[1] = rawDim[1] - errorDim[1]
-				} else if lidarVal > 9 {
+				} else if lidarVal > 15 {
 					correctDim[1] = rawDim[1] + errorDim[1]
 				}
 			}
