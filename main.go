@@ -65,11 +65,10 @@ func stopMove(gpg *g.Driver) {
 
 func takeTurn(gpg *g.Driver) {
 	counter := 3 // *********** should be 3
-	correct := counter
 
 	fmt.Println("90 degree turn in: ")
 	for counter > 0 {
-		time.Sleep(time.Millisecond * time.Duration(333*correct))
+		time.Sleep(time.Second)
 		fmt.Println(counter)
 		counter--
 	}
@@ -103,7 +102,7 @@ func forwardLoop(lidarErr int, gpg *g.Driver) {
 
 	fmt.Println("forward loop end in: ")
 	for counter > 0 {
-		time.Sleep(time.Millisecond * 800)
+		time.Sleep(time.Millisecond * 750)
 		fmt.Println(counter)
 		counter--
 	}
